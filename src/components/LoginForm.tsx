@@ -8,9 +8,11 @@ import { ui } from "@/lib/ui";
 export function LoginForm({
   tenantId,
   tenantName,
+  logoUrl,
 }: {
   tenantId: string | null;
   tenantName: string;
+  logoUrl?: string | null;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -64,6 +66,10 @@ export function LoginForm({
   return (
     <main className="night-sky flex min-h-dvh items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm animate-fade-in-up rounded-card bg-white p-7 shadow-2xl ring-1 ring-black/5">
+        {logoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={logoUrl} alt={tenantName} className="mx-auto mb-4 h-14 w-auto object-contain" />
+        )}
         <p className="font-display text-sm font-semibold uppercase tracking-wide text-brand-secondary">
           {tenantName}
         </p>
