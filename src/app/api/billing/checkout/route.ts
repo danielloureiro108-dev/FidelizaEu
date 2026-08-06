@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 // Inicia uma assinatura mensal para um NOVO estabelecimento (self-service).
 // Não exige login: o Checkout do Stripe coleta e-mail e pagamento; o
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
   const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     line_items: [{ price: process.env.STRIPE_PRICE_ID!, quantity: 1 }],
     customer_email: email,
