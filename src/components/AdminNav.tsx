@@ -7,6 +7,7 @@ const TABS = [
   { href: "/admin", label: "Painel" },
   { href: "/admin/qrcode", label: "QR do dia" },
   { href: "/admin/config", label: "Configurações" },
+  { href: "/admin/billing", label: "Assinatura" },
 ];
 
 export function AdminNav() {

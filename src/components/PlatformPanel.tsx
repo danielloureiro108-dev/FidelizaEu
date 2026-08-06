@@ -14,6 +14,16 @@ type TenantRow = {
   logo_url: string | null;
   color_primary: string;
   color_secondary: string;
+  subscription_status: string;
+};
+
+const STATUS_BADGE: Record<string, { label: string; className: string }> = {
+  trialing: { label: "Teste grátis", className: "bg-blue-50 text-blue-700" },
+  active: { label: "Ativa", className: "bg-emerald-50 text-emerald-700" },
+  past_due: { label: "Pendente", className: "bg-amber-50 text-amber-700" },
+  unpaid: { label: "Pendente", className: "bg-amber-50 text-amber-700" },
+  canceled: { label: "Cancelada", className: "bg-red-50 text-red-700" },
+  inactive: { label: "Sem assinatura", className: "bg-neutral-100 text-neutral-500" },
 };
 
 type AdminRow = {
@@ -224,11 +234,14 @@ export function PlatformPanel({
               <tr>
                 <th className="px-3 py-2">Nome</th>
                 <th className="px-3 py-2">Endereço</th>
+                <th className="px-3 py-2">Assinatura</th>
                 <th className="px-3 py-2 text-right">Ações</th>
               </tr>
             </thead>
             <tbody>
-              {tenants.map((t) => (
+              {tenants.map((t) => {
+                const badge = STATUS_BADGE[t.subscription_status] ?? STATUS_BADGE.inactive;
+                return (
                 <Fragment key={t.id}>
                   <tr className="border-t border-neutral-100 transition hover:bg-neutral-50">
                     <td className="px-3 py-2 font-medium">{t.name}</td>
@@ -238,6 +251,11 @@ export function PlatformPanel({
                         : rootDomain
                         ? `${t.slug}.${rootDomain}`
                         : t.slug}
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badge.className}`}>
+                        {badge.label}
+                      </span>
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex justify-end gap-1.5">
@@ -261,7 +279,7 @@ export function PlatformPanel({
                   </tr>
                   {editingId === t.id && (
                     <tr className="border-t border-neutral-100 bg-neutral-50/60">
-                      <td colSpan={3} className="px-3 py-4">
+                      <td colSpan={4} className="px-3 py-4">
                         {editLoading ? (
                           <p className="text-sm text-neutral-500">Carregando...</p>
                         ) : (
@@ -342,7 +360,8 @@ export function PlatformPanel({
                     </tr>
                   )}
                 </Fragment>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
