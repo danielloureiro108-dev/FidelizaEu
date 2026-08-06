@@ -12,6 +12,12 @@ export async function GET(request: Request) {
 
   const root = (process.env.ROOT_DOMAIN || "").toLowerCase();
 
+  // Domínio-raiz da própria plataforma (landing page em "/") — sempre libera,
+  // não é um estabelecimento, é o site da FidelizaEu.
+  if (root && domain === root) {
+    return new NextResponse("ok");
+  }
+
   // Subdomínio do root: <slug>.<root> — precisa existir um tenant com esse slug.
   if (root && domain.endsWith(`.${root}`)) {
     const slug = domain.slice(0, -(root.length + 1)).split(".")[0];
