@@ -33,8 +33,15 @@ export function LoginForm({
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          // Vincula o novo cliente ao estabelecimento deste domínio.
-          options: { data: { full_name: name, tenant_id: tenantId } },
+          options: {
+            // Vincula o novo cliente ao estabelecimento deste domínio.
+            data: { full_name: name, tenant_id: tenantId },
+            // Sem isto, o link do e-mail de confirmação usa a "Site URL"
+            // padrão do projeto Supabase (localhost) em vez deste tenant.
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+              next
+            )}`,
+          },
         });
         if (error) throw error;
         setMsg("Conta criada! Verifique seu e-mail se a confirmação estiver ativa.");
