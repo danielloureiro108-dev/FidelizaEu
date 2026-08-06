@@ -92,7 +92,7 @@ export default function ScanPage() {
   return (
     <main className="night-sky min-h-dvh px-5 py-6">
       <div className="mx-auto max-w-md">
-        <Link href="/cartao" className="text-sm text-white/80 underline">
+        <Link href="/cartao" className="text-sm text-white/80 underline-offset-2 hover:underline">
           ← Voltar ao cartão
         </Link>
         <h1 className="mt-3 font-display text-2xl font-bold text-white">
@@ -107,9 +107,12 @@ export default function ScanPage() {
         </div>
 
         {result?.kind === "success" && (
-          <div className="mt-4 rounded-card bg-white p-6 text-center">
-            <p className="font-display text-2xl font-bold text-brand-primary">
-              Carimbado! ✓
+          <div className="mt-4 animate-fade-in-up rounded-card bg-white p-6 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-primary/10">
+              <span className="font-display text-2xl font-bold text-brand-primary">✓</span>
+            </div>
+            <p className="mt-3 font-display text-2xl font-bold text-brand-primary">
+              Carimbado!
             </p>
             <p className="mt-1 text-neutral-600">
               {result.stamps} de {result.required} carimbos
@@ -126,7 +129,7 @@ export default function ScanPage() {
             )}
             <button
               onClick={() => router.push("/cartao")}
-              className="mt-5 w-full rounded-full bg-brand-primary py-3 font-semibold text-white"
+              className="mt-5 w-full rounded-full bg-brand-primary py-3 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-[0.98]"
             >
               Ver meu cartão
             </button>
@@ -134,11 +137,11 @@ export default function ScanPage() {
         )}
 
         {result?.kind === "error" && (
-          <div className="mt-4 rounded-card bg-white p-6 text-center">
+          <div className="mt-4 animate-fade-in-up rounded-card bg-white p-6 text-center shadow-2xl">
             <p className="text-lg font-semibold text-red-600">{result.message}</p>
             <button
               onClick={() => setResult(null)}
-              className="mt-4 w-full rounded-full bg-brand-primary py-3 font-semibold text-white"
+              className="mt-4 w-full rounded-full bg-brand-primary py-3 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-[0.98]"
             >
               Tentar novamente
             </button>

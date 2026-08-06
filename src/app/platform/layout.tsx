@@ -24,16 +24,16 @@ export default async function PlatformLayout({
   if (!profile?.is_super_admin) redirect("/");
 
   return (
-    <div className="mx-auto min-h-dvh max-w-3xl">
-      <header className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+    <div className="mx-auto min-h-dvh max-w-3xl bg-neutral-50">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-5 py-4 backdrop-blur-md">
         <Link href="/platform" className="font-display text-lg font-bold text-brand-primary">
           Plataforma · Fidelidade
         </Link>
-        <span className="rounded-full bg-brand-primary px-3 py-1 text-xs font-semibold text-white">
+        <span className="rounded-full bg-brand-gradient px-3 py-1 text-xs font-semibold text-white shadow-sm">
           Super admin
         </span>
       </header>
-      <main className="px-5 py-6">{children}</main>
+      <main className="animate-fade-in-up px-5 py-6">{children}</main>
     </div>
   );
 }

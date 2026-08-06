@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
+import { AdminNav } from "@/components/AdminNav";
 import { getActiveTenant } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
@@ -28,20 +28,10 @@ export default async function AdminLayout({
   const tenant = await getActiveTenant();
 
   return (
-    <div className="mx-auto min-h-dvh max-w-3xl">
+    <div className="mx-auto min-h-dvh max-w-3xl bg-neutral-50">
       <AppHeader name={tenant?.name ?? "Admin"} logoUrl={tenant?.logo_url} />
-      <nav className="flex gap-1 border-b border-neutral-200 px-5 text-sm">
-        <Link href="/admin" className="px-3 py-2 font-medium hover:text-brand-primary">
-          Painel
-        </Link>
-        <Link href="/admin/qrcode" className="px-3 py-2 font-medium hover:text-brand-primary">
-          QR do dia
-        </Link>
-        <Link href="/admin/config" className="px-3 py-2 font-medium hover:text-brand-primary">
-          Configurações
-        </Link>
-      </nav>
-      <main className="px-5 py-6">{children}</main>
+      <AdminNav />
+      <main className="animate-fade-in-up px-5 py-6">{children}</main>
     </div>
   );
 }
