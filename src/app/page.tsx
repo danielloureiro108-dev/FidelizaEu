@@ -1,5 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getActiveTenant } from "@/lib/tenant";
+import { LandingPage } from "@/components/LandingPage";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const supabase = createClient();
@@ -7,7 +11,13 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (!user) {
+    // Host sem tenant resolvido = domínio da plataforma → landing page.
+    // Host de um estabelecimento (subdomínio/domínio próprio) → login direto.
+    const tenant = await getActiveTenant();
+    if (!tenant) return <LandingPage />;
+    redirect("/login");
+  }
 
   const { data: profile } = await supabase
     .from("profiles")

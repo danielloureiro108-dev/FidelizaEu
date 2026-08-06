@@ -6,8 +6,10 @@ import { BrandStyle } from "@/components/BrandProvider";
 export async function generateMetadata(): Promise<Metadata> {
   const tenant = await getActiveTenant();
   return {
-    title: tenant?.name ?? "Cartão Fidelidade",
-    description: "Acumule e ganhe!",
+    title: tenant?.name ?? "FidelizaEu — Cartão fidelidade digital para o seu negócio",
+    description: tenant
+      ? "Acumule e ganhe!"
+      : "Cartão fidelidade digital com QR anti-fraude e a cara do seu estabelecimento.",
   };
 }
 

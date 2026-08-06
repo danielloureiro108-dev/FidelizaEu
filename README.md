@@ -94,7 +94,55 @@ npm run dev
 
 ---
 
-## 4. Deploy multi-tenant na VPS
+## 4. Cobrança (Stripe) — mensalidade dos estabelecimentos
+
+A landing page (`/`, no domínio-raiz) vende a assinatura mensal da
+plataforma para novos estabelecimentos. O fluxo é self-service:
+
+1. O visitante clica em **"Começar teste grátis"**, informa nome do
+   negócio e e-mail em `/assinar`.
+2. É redirecionado para o **Checkout do Stripe** (assinatura com 14 dias
+   de teste grátis).
+3. Ao confirmar o pagamento, o webhook `/api/webhooks/stripe` cria o
+   tenant automaticamente (slug gerado do nome, marca padrão, programa
+   "Cartão Fidelidade" com 10 carimbos) e envia um **convite por e-mail**
+   para o dono definir a senha e virar admin daquele estabelecimento.
+4. Atualizações de status (pagamento atrasado, cancelamento) chegam pelo
+   mesmo webhook e atualizam `tenants.subscription_status`.
+
+O admin gerencia a própria assinatura em **`/admin/billing`** (trocar
+cartão, ver faturas, cancelar) via Portal de Cobrança do Stripe. O super
+admin vê o status de cada estabelecimento em `/platform`.
+
+### Configurar no Stripe
+
+1. Crie um **Product** (ex.: "FidelizaEu — Assinatura mensal") com um
+   **Price** recorrente mensal. Copie o ID do Price (`price_...`).
+2. Em **Developers > API keys**, copie a **Secret key** (`sk_...`).
+3. Em **Developers > Webhooks**, crie um endpoint apontando para
+   `https://SEU_DOMINIO/api/webhooks/stripe`, escutando:
+   - `checkout.session.completed`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+
+   Copie o **Signing secret** (`whsec_...`).
+4. Em **Settings > Billing > Customer portal**, ative o portal (permite
+   o admin trocar cartão/cancelar sozinho).
+5. Preencha no `.env`: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+   `STRIPE_PRICE_ID` e `NEXT_PUBLIC_APP_URL` (domínio-raiz da
+   plataforma). Rode `--build` de novo (variáveis `NEXT_PUBLIC_*` entram
+   no build).
+
+### Sobre o valor da mensalidade
+
+O código já vem com a landing page e o Checkout configurados para
+**R$ 97/mês** (14 dias grátis). Esse número é só um ponto de partida —
+ajuste o **Price** no Stripe e o texto em `LandingPage.tsx` /
+`CheckoutForm.tsx` / `BillingPanel.tsx` para o valor que você escolher.
+
+---
+
+## 5. Deploy multi-tenant na VPS
 
 ### DNS
 
@@ -151,10 +199,16 @@ git pull && docker compose up -d --build
 ```
 supabase/migrations/0001_init.sql        Schema + RLS + função de carimbo
 supabase/migrations/0002_multitenant.sql Domínios, super admin, provisionamento
+supabase/migrations/0003_platform_admin.sql Editar/remover estabelecimentos
+supabase/migrations/0004_billing.sql     Campos de assinatura (Stripe) no tenant
 scripts/migrate.mjs                      Aplica as migrations via connection string
 src/lib/tenant.ts                        Resolução do tenant pelo host
 src/lib/token.ts                         Token rotativo (HMAC estilo TOTP)
+src/lib/stripe.ts                        Cliente do SDK do Stripe
 src/lib/supabase/*                       Clients (browser, server, admin, middleware)
+src/components/LandingPage.tsx           Landing page da plataforma (domínio-raiz)
+src/app/assinar                          Formulário que inicia o Checkout do Stripe
+src/app/admin/billing                    Status da assinatura + Portal de Cobrança
 src/app/login                            Login/cadastro (vincula ao tenant do host)
 src/app/(app)/cartao                     Cartão do cliente (por estabelecimento)
 src/app/(app)/scan                       Leitor de QR do cliente
@@ -163,6 +217,9 @@ src/app/platform/*                       Painel do super admin (cria tenants)
 src/app/api/stamp                        Valida token do QR + registra carimbo
 src/app/api/token                        Token atual do QR (só admin)
 src/app/api/tls-check                    Valida domínio para o Caddy (on-demand TLS)
+src/app/api/billing/checkout             Cria a sessão de Checkout (nova assinatura)
+src/app/api/billing/portal               Cria a sessão do Portal de Cobrança
+src/app/api/webhooks/stripe              Provisiona o tenant e atualiza status da assinatura
 ```
 
 ---
@@ -180,8 +237,12 @@ src/app/api/tls-check                    Valida domínio para o Caddy (on-demand
 
 **Pronto:** white-label por tenant, auth Google/e-mail, cartão digital, QR rotativo
 seguro, regra "N por dia", geração de recompensa, painel com métricas básicas,
-configuração de marca e estratégia, Docker + HTTPS.
+configuração de marca e estratégia, Docker + HTTPS, landing page + assinatura
+mensal via Stripe (Checkout, Portal de Cobrança, provisionamento automático do
+tenant).
 
 **Sugestões de evolução:** tela de resgate de recompensas no admin, upload de logo
-para o Supabase Storage (hoje é por URL), multi-tenant por domínio/subdomínio,
-notificações, e confirmação de e-mail/onboarding.
+para o Supabase Storage (hoje é por URL), notificações, confirmação de
+e-mail/onboarding, bloqueio de acesso ao painel quando a assinatura está
+vencida (hoje só mostra um aviso), planos com preços diferentes (ex.: mensal
+vs. anual, ou por número de unidades).

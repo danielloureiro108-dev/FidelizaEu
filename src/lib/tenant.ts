@@ -100,6 +100,11 @@ export async function getActiveTenant(): Promise<Tenant | null> {
 
   // 3) fallback (deploy single-tenant / dev): só roda quando o host não
   // identifica nenhum domínio próprio nem slug de subdomínio.
+  //    Com ROOT_DOMAIN definido (multi-tenant), um host sem tenant é o
+  //    domínio da própria plataforma (landing page) — não "empresta" a marca
+  //    do primeiro estabelecimento cadastrado.
+  if (process.env.ROOT_DOMAIN) return null;
+
   const envSlug = process.env.TENANT_SLUG;
   const supabase = createClient();
   const query = supabase.from("tenants").select(TENANT_COLS);
