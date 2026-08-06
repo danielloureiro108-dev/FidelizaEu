@@ -5,19 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Tenant, LoyaltyProgram } from "@/lib/tenant";
 import { ui } from "@/lib/ui";
-
-// "26 35 92" <-> "#1a235c"
-function rgbToHex(rgb: string): string {
-  const [r, g, b] = rgb.split(" ").map((n) => parseInt(n, 10) || 0);
-  return "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
-}
-function hexToRgb(hex: string): string {
-  const m = hex.replace("#", "");
-  const r = parseInt(m.slice(0, 2), 16);
-  const g = parseInt(m.slice(2, 4), 16);
-  const b = parseInt(m.slice(4, 6), 16);
-  return `${r} ${g} ${b}`;
-}
+import { rgbToHex, hexToRgb } from "@/lib/color";
 
 export function ConfigForm({
   tenant,

@@ -19,12 +19,29 @@ export function LoginForm({
   const params = useSearchParams();
   const next = params.get("next") || "/";
 
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setMsg(null);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/reset-senha`,
+      });
+      if (error) throw error;
+      setMsg("Enviamos um link de redefinição para o seu e-mail.");
+    } catch (err: any) {
+      setMsg(err.message ?? "Algo deu errado. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -74,43 +91,73 @@ export function LoginForm({
           {tenantName}
         </p>
         <h1 className="mt-1 font-display text-2xl font-bold text-brand-primary">
-          {mode === "login" ? "Entrar" : "Criar conta"}
+          {mode === "login" ? "Entrar" : mode === "signup" ? "Criar conta" : "Esqueci minha senha"}
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Acesse seu cartão fidelidade digital.
+          {mode === "forgot"
+            ? "Informe seu e-mail para receber um link de redefinição."
+            : "Acesse seu cartão fidelidade digital."}
         </p>
 
-        <form onSubmit={handleEmail} className="mt-6 space-y-3">
-          {mode === "signup" && (
+        {mode === "forgot" ? (
+          <form onSubmit={handleForgot} className="mt-6 space-y-3">
             <input
-              type="text"
-              placeholder="Seu nome"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              type="email"
+              required
+              placeholder="E-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className={ui.input}
             />
-          )}
-          <input
-            type="email"
-            required
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={ui.input}
-          />
-          <input
-            type="password"
-            required
-            minLength={6}
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={ui.input}
-          />
-          <button type="submit" disabled={loading} className={`${ui.btnPrimary} w-full`}>
-            {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
-          </button>
-        </form>
+            <button type="submit" disabled={loading} className={`${ui.btnPrimary} w-full`}>
+              {loading ? "Aguarde..." : "Enviar link de redefinição"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleEmail} className="mt-6 space-y-3">
+            {mode === "signup" && (
+              <input
+                type="text"
+                placeholder="Seu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={ui.input}
+              />
+            )}
+            <input
+              type="email"
+              required
+              placeholder="E-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={ui.input}
+            />
+            <input
+              type="password"
+              required
+              minLength={6}
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={ui.input}
+            />
+            {mode === "login" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("forgot");
+                  setMsg(null);
+                }}
+                className="block text-sm font-medium text-brand-primary underline-offset-2 hover:underline"
+              >
+                Esqueci minha senha
+              </button>
+            )}
+            <button type="submit" disabled={loading} className={`${ui.btnPrimary} w-full`}>
+              {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
+            </button>
+          </form>
+        )}
 
         {msg && (
           <p className="mt-3 rounded-lg bg-neutral-100 px-3 py-2 text-sm text-neutral-700">
@@ -119,10 +166,13 @@ export function LoginForm({
         )}
 
         <button
-          onClick={() => setMode(mode === "login" ? "signup" : "login")}
+          onClick={() => {
+            setMode(mode === "signup" ? "login" : mode === "forgot" ? "login" : "signup");
+            setMsg(null);
+          }}
           className="mt-4 w-full text-center text-sm font-medium text-brand-primary underline-offset-2 hover:underline"
         >
-          {mode === "login" ? "Não tem conta? Cadastre-se" : "Já tem conta? Entrar"}
+          {mode === "signup" ? "Já tem conta? Entrar" : mode === "forgot" ? "Voltar para o login" : "Não tem conta? Cadastre-se"}
         </button>
       </div>
     </main>

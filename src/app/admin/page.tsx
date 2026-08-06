@@ -16,14 +16,22 @@ export default async function AdminDashboard() {
 
   const [{ count: customers }, { count: stampsToday }, { count: pendingRewards }] =
     await Promise.all([
-      supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "customer"),
+      // Clientes DESTE estabelecimento — via "cards" (quem tem cartão aqui),
+      // não "profiles" (que é global e não reflete o tenant "casa" de quem
+      // já é cliente de outro lugar).
+      supabase
+        .from("cards")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenant?.id ?? ""),
       supabase
         .from("stamps")
         .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenant?.id ?? "")
         .gte("created_at", startOfDay.toISOString()),
       supabase
         .from("rewards")
         .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenant?.id ?? "")
         .eq("status", "pending"),
     ]);
 
