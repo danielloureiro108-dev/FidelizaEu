@@ -1,0 +1,21 @@
+# Multi-tenant com HTTPS automático para QUALQUER domínio válido.
+#
+# on_demand_tls: o Caddy só emite certificado depois de perguntar ao app
+# (/api/tls-check) se o domínio pertence a um estabelecimento. Isso cobre
+# tanto os subdomínios (<slug>.SEU-ROOT) quanto os domínios próprios dos
+# clientes — sem precisar editar config a cada novo estabelecimento.
+
+{
+	on_demand_tls {
+		ask http://app:3000/api/tls-check
+	}
+}
+
+# Responde em qualquer host, com certificado emitido sob demanda.
+https:// {
+	tls {
+		on_demand
+	}
+	encode gzip
+	reverse_proxy app:3000
+}

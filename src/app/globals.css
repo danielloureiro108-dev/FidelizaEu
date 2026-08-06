@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Valores padrão — sobrescritos em runtime pelo BrandProvider. */
+  --brand-primary: 26 35 92;
+  --brand-secondary: 212 160 23;
+  --brand-accent: 212 160 23;
+  --brand-ink: 17 24 39;
+  --font-display: "Georgia", serif;
+  --font-sans: system-ui, -apple-system, sans-serif;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: rgb(var(--brand-ink));
+}
+
+/* Céu estrelado do cartão — ecoa o cartão físico impresso. */
+.night-sky {
+  background-color: rgb(var(--brand-primary));
+  background-image: radial-gradient(rgba(255, 255, 255, 0.55) 1px, transparent 1.4px);
+  background-size: 16px 16px;
+}
+
+/* A "borda pincelada" de cada casa de carimbo. */
+.stamp-slot {
+  clip-path: polygon(
+    18% 4%, 40% 0, 62% 6%, 82% 2%, 96% 20%, 100% 42%, 96% 66%,
+    100% 84%, 80% 98%, 58% 100%, 36% 96%, 16% 100%, 3% 80%,
+    0 58%, 4% 36%, 0 16%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stamp-pop {
+    animation: pop 0.35s ease-out;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.4); opacity: 0; }
+    70% { transform: scale(1.12); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+}
