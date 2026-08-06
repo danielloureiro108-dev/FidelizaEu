@@ -25,11 +25,14 @@ export default async function PlatformLayout({
 
   return (
     <div className="mx-auto min-h-dvh max-w-3xl bg-neutral-50">
+      {/* Identidade fixa do FidelizaEu (não a do tenant do host) — esta é a
+          área da plataforma, não a de um estabelecimento específico. */}
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-5 py-4 backdrop-blur-md">
-        <Link href="/platform" className="font-display text-lg font-bold text-brand-primary">
-          Plataforma · Fidelidade
+        <Link href="/platform">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/fidelizaeu-lockup.png" alt="FidelizaEu" className="h-8 w-auto" />
         </Link>
-        <span className="rounded-full bg-brand-gradient px-3 py-1 text-xs font-semibold text-white shadow-sm">
+        <span className="rounded-full bg-gradient-to-br from-[#232C68] to-[#1A235C] px-3 py-1 text-xs font-semibold text-white shadow-sm">
           Super admin
         </span>
       </header>
