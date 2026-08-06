@@ -90,14 +90,16 @@ export async function getActiveTenant(): Promise<Tenant | null> {
     if (byDomain) return byDomain;
   }
 
-  // 2) subdomínio
+  // 2) subdomínio: o host aponta explicitamente para um slug, então NUNCA
+  // cai no fallback genérico abaixo — se o estabelecimento não existir
+  // (ex.: foi excluído), retorna null em vez de mostrar outro tenant.
   const slug = slugFromHost(host);
   if (slug) {
-    const bySlug = await getTenantBySlug(slug);
-    if (bySlug) return bySlug;
+    return await getTenantBySlug(slug);
   }
 
-  // 3) fallback (deploy single-tenant / dev)
+  // 3) fallback (deploy single-tenant / dev): só roda quando o host não
+  // identifica nenhum domínio próprio nem slug de subdomínio.
   const envSlug = process.env.TENANT_SLUG;
   const supabase = createClient();
   const query = supabase.from("tenants").select(TENANT_COLS);
