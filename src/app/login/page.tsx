@@ -9,6 +9,7 @@ export default async function LoginPage() {
     <LoginForm
       tenantId={tenant?.id ?? null}
       tenantName={tenant?.name ?? "Cartão Fidelidade"}
+      logoUrl={tenant?.logo_url ?? null}
     />
   );
 }
