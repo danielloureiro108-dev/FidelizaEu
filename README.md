@@ -26,9 +26,23 @@ estabelecimento — o mesmo código atende marcas diferentes.
 ## 1. Supabase (cloud)
 
 1. Crie um projeto em https://supabase.com.
-2. Em **SQL Editor**, rode na ordem:
-   - `supabase/migrations/0001_init.sql` (tabelas, RLS, função de carimbo, tenant de exemplo)
-   - `supabase/migrations/0002_multitenant.sql` (domínios, super admin, provisionamento)
+2. Aplique o schema pela **connection string direta** (sem abrir o SQL Editor):
+
+   ```bash
+   cp .env.example .env   # preencha ao menos DATABASE_URL
+   npm install
+   npm run db:migrate
+   ```
+
+   O runner (`scripts/migrate.mjs`) roda `supabase/migrations/*.sql` na ordem e
+   registra o que já aplicou em `public._migrations` (idempotente — pode rodar de novo).
+
+   - Pegue a string em **Settings > Database > Connection string** e use a aba
+     **Direct connection** ou **Session pooler**; troque `[YOUR-PASSWORD]` pela senha do banco.
+   - Numa VPS **sem IPv6**, prefira a **Session pooler** (IPv4). Evite a
+     **Transaction pooler** (6543) para migrations.
+   - Alternativa com psql: `psql "$DATABASE_URL" -f supabase/migrations/0001_init.sql`
+     e depois `0002_multitenant.sql`. Ou cole os arquivos no SQL Editor manualmente.
 3. Em **Authentication > Providers**, habilite **Email** e **Google**
    (no Google, configure o OAuth Client e a URL de redirecionamento
    `https://SEU_DOMINIO/auth/callback`). Adicione o mesmo em
@@ -137,6 +151,7 @@ git pull && docker compose up -d --build
 ```
 supabase/migrations/0001_init.sql        Schema + RLS + função de carimbo
 supabase/migrations/0002_multitenant.sql Domínios, super admin, provisionamento
+scripts/migrate.mjs                      Aplica as migrations via connection string
 src/lib/tenant.ts                        Resolução do tenant pelo host
 src/lib/token.ts                         Token rotativo (HMAC estilo TOTP)
 src/lib/supabase/*                       Clients (browser, server, admin, middleware)
