@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ui } from "@/lib/ui";
 
 type TenantRow = {
   id: string;
@@ -66,17 +67,13 @@ export function PlatformPanel({
     else setMsg("Admin nomeado com sucesso.");
   }
 
-  const field =
-    "w-full rounded-lg border border-neutral-300 px-3 py-2 outline-none focus:border-brand-primary";
-  const label = "block text-sm font-medium text-neutral-700";
-
   return (
-    <div className="space-y-10">
-      <section>
-        <h2 className="font-display text-xl font-bold text-brand-primary">
+    <div className="animate-fade-in-up space-y-6">
+      <section className={`${ui.card} p-5 sm:p-6`}>
+        <h2 className={ui.sectionTitle}>
           Estabelecimentos ({tenants.length})
         </h2>
-        <div className="mt-3 overflow-hidden rounded-card border border-neutral-200">
+        <div className="mt-3 overflow-hidden rounded-xl border border-neutral-200">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-500">
               <tr>
@@ -86,7 +83,7 @@ export function PlatformPanel({
             </thead>
             <tbody>
               {tenants.map((t) => (
-                <tr key={t.id} className="border-t border-neutral-100">
+                <tr key={t.id} className="border-t border-neutral-100 transition hover:bg-neutral-50">
                   <td className="px-3 py-2 font-medium">{t.name}</td>
                   <td className="px-3 py-2 text-neutral-500">
                     {t.custom_domain
@@ -102,18 +99,18 @@ export function PlatformPanel({
         </div>
       </section>
 
-      <section>
-        <h2 className="font-display text-xl font-bold text-brand-primary">
+      <section className={`${ui.card} p-5 sm:p-6`}>
+        <h2 className={ui.sectionTitle}>
           Novo estabelecimento
         </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <label className={label}>Nome</label>
-            <input className={field} value={nt.name} onChange={(e) => setNt({ ...nt, name: e.target.value })} />
+            <label className={ui.label}>Nome</label>
+            <input className={ui.input} value={nt.name} onChange={(e) => setNt({ ...nt, name: e.target.value })} />
           </div>
           <div>
-            <label className={label}>Slug (subdomínio)</label>
-            <input className={field} placeholder="donario" value={nt.slug} onChange={(e) => setNt({ ...nt, slug: e.target.value })} />
+            <label className={ui.label}>Slug (subdomínio)</label>
+            <input className={ui.input} placeholder="donario" value={nt.slug} onChange={(e) => setNt({ ...nt, slug: e.target.value })} />
             {rootDomain && nt.slug && (
               <p className="mt-1 text-xs text-neutral-400">
                 Ficará em {nt.slug.toLowerCase()}.{rootDomain}
@@ -121,25 +118,25 @@ export function PlatformPanel({
             )}
           </div>
           <div className="sm:col-span-2">
-            <label className={label}>Domínio próprio (opcional)</label>
-            <input className={field} placeholder="fidelidade.cliente.com.br" value={nt.custom_domain} onChange={(e) => setNt({ ...nt, custom_domain: e.target.value })} />
+            <label className={ui.label}>Domínio próprio (opcional)</label>
+            <input className={ui.input} placeholder="fidelidade.cliente.com.br" value={nt.custom_domain} onChange={(e) => setNt({ ...nt, custom_domain: e.target.value })} />
           </div>
           <div>
-            <label className={label}>Carimbos para ganhar</label>
-            <input type="number" min={1} className={field} value={nt.stamps} onChange={(e) => setNt({ ...nt, stamps: +e.target.value })} />
+            <label className={ui.label}>Carimbos para ganhar</label>
+            <input type="number" min={1} className={ui.input} value={nt.stamps} onChange={(e) => setNt({ ...nt, stamps: +e.target.value })} />
           </div>
           <div>
-            <label className={label}>Recompensa</label>
-            <input className={field} value={nt.reward} onChange={(e) => setNt({ ...nt, reward: e.target.value })} />
+            <label className={ui.label}>Recompensa</label>
+            <input className={ui.input} value={nt.reward} onChange={(e) => setNt({ ...nt, reward: e.target.value })} />
           </div>
         </div>
-        <button onClick={createTenant} disabled={busy || !nt.name || !nt.slug} className="mt-4 rounded-full bg-brand-primary px-6 py-2.5 font-semibold text-white disabled:opacity-60">
+        <button onClick={createTenant} disabled={busy || !nt.name || !nt.slug} className={`${ui.btnPrimary} mt-4`}>
           Criar estabelecimento
         </button>
       </section>
 
-      <section>
-        <h2 className="font-display text-xl font-bold text-brand-primary">
+      <section className={`${ui.card} p-5 sm:p-6`}>
+        <h2 className={ui.sectionTitle}>
           Nomear admin
         </h2>
         <p className="mt-1 text-sm text-neutral-500">
@@ -147,12 +144,12 @@ export function PlatformPanel({
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <label className={label}>E-mail do dono</label>
-            <input className={field} value={ga.email} onChange={(e) => setGa({ ...ga, email: e.target.value })} />
+            <label className={ui.label}>E-mail do dono</label>
+            <input className={ui.input} value={ga.email} onChange={(e) => setGa({ ...ga, email: e.target.value })} />
           </div>
           <div>
-            <label className={label}>Estabelecimento</label>
-            <select className={field} value={ga.tenantId} onChange={(e) => setGa({ ...ga, tenantId: e.target.value })}>
+            <label className={ui.label}>Estabelecimento</label>
+            <select className={ui.input} value={ga.tenantId} onChange={(e) => setGa({ ...ga, tenantId: e.target.value })}>
               {tenants.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -161,7 +158,7 @@ export function PlatformPanel({
             </select>
           </div>
         </div>
-        <button onClick={grantAdmin} disabled={busy || !ga.email || !ga.tenantId} className="mt-4 rounded-full bg-brand-primary px-6 py-2.5 font-semibold text-white disabled:opacity-60">
+        <button onClick={grantAdmin} disabled={busy || !ga.email || !ga.tenantId} className={`${ui.btnPrimary} mt-4`}>
           Nomear admin
         </button>
       </section>

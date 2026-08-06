@@ -55,7 +55,7 @@ export function QrScanner({
       <div
         id="qr-reader"
         ref={containerRef}
-        className="mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-card bg-black"
+        className="mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-card bg-black shadow-2xl ring-4 ring-white/10"
       />
       {error && (
         <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">

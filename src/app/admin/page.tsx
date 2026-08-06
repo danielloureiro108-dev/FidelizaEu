@@ -28,9 +28,23 @@ export default async function AdminDashboard() {
     ]);
 
   const cards = [
-    { label: "Clientes cadastrados", value: customers ?? 0 },
-    { label: "Carimbos hoje", value: stampsToday ?? 0 },
-    { label: "Recompensas a resgatar", value: pendingRewards ?? 0 },
+    {
+      label: "Clientes cadastrados",
+      value: customers ?? 0,
+      icon: (
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8 4c1.5.4 3 1.5 3 4v2" />
+      ),
+    },
+    {
+      label: "Carimbos hoje",
+      value: stampsToday ?? 0,
+      icon: <path d="M9 11.5 11.5 14 15 9M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />,
+    },
+    {
+      label: "Recompensas a resgatar",
+      value: pendingRewards ?? 0,
+      icon: <path d="M20 12v8H4v-8M2 7h20v5H2V7Zm10 0V4a2.5 2.5 0 1 0-2.5 2.5H12Zm0 0V4a2.5 2.5 0 1 1 2.5 2.5H12Zm0 0v13" />,
+    },
   ];
 
   return (
@@ -43,10 +57,26 @@ export default async function AdminDashboard() {
         {program?.reward_description}
       </p>
 
-      <div className="mt-6 grid grid-cols-3 gap-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {cards.map((c) => (
-          <div key={c.label} className="rounded-card border border-neutral-200 p-4">
-            <p className="font-display text-3xl font-bold text-brand-primary">
+          <div
+            key={c.label}
+            className="rounded-card border border-neutral-200/80 bg-white p-4 shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-brand-secondary"
+            >
+              {c.icon}
+            </svg>
+            <p className="mt-3 font-display text-3xl font-bold text-brand-primary">
               {c.value}
             </p>
             <p className="mt-1 text-xs text-neutral-500">{c.label}</p>
@@ -57,7 +87,7 @@ export default async function AdminDashboard() {
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <Link
           href="/admin/qrcode"
-          className="rounded-card bg-brand-primary p-5 text-white transition hover:opacity-90"
+          className="group rounded-card bg-brand-gradient p-5 text-white shadow-glow transition hover:-translate-y-0.5"
         >
           <p className="font-display text-lg font-bold">Exibir QR do dia</p>
           <p className="mt-1 text-sm text-white/80">
@@ -66,7 +96,7 @@ export default async function AdminDashboard() {
         </Link>
         <Link
           href="/admin/config"
-          className="rounded-card border border-neutral-200 p-5 transition hover:bg-neutral-50"
+          className="rounded-card border border-neutral-200/80 bg-white p-5 shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift"
         >
           <p className="font-display text-lg font-bold text-brand-primary">
             Marca e estratégia

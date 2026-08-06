@@ -21,6 +21,17 @@ body {
   color: rgb(var(--brand-ink));
 }
 
+a,
+button {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+::selection {
+  background: rgb(var(--brand-primary) / 0.18);
+}
+
 /* Céu estrelado do cartão — ecoa o cartão físico impresso. */
 .night-sky {
   background-color: rgb(var(--brand-primary));

@@ -12,8 +12,8 @@ export function LoyaltyCard({
 }) {
   const slots = Array.from({ length: required });
   return (
-    <div className="night-sky rounded-card p-5 shadow-xl">
-      <div className="mb-4 rounded-lg bg-brand-secondary px-3 py-2 text-center">
+    <div className="night-sky animate-fade-in-up rounded-card p-5 shadow-lift ring-1 ring-black/10">
+      <div className="mb-4 rounded-lg bg-brand-secondary px-3 py-2 text-center shadow-sm">
         <p className="font-display text-lg font-bold leading-tight text-brand-primary">
           A cada {required} refeições
         </p>
@@ -27,9 +27,9 @@ export function LoyaltyCard({
           return (
             <div
               key={i}
-              className={`stamp-slot flex aspect-square items-center justify-center bg-white ${
-                justStamped && isNewest ? "stamp-pop" : ""
-              }`}
+              className={`stamp-slot flex aspect-square items-center justify-center bg-white transition-shadow ${
+                filled ? "shadow-[0_2px_10px_rgba(0,0,0,0.15)]" : ""
+              } ${justStamped && isNewest ? "stamp-pop" : ""}`}
             >
               {filled ? (
                 <span className="font-display text-2xl font-black text-brand-primary">
