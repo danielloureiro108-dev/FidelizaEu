@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 // Abre o Portal de Cobrança do Stripe para o admin gerenciar a própria
 // assinatura (trocar cartão, ver faturas, cancelar).
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   }
 
   const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
-  const portalSession = await stripe.billingPortal.sessions.create({
+  const portalSession = await getStripe().billingPortal.sessions.create({
     customer: tenant.stripe_customer_id,
     return_url: `${origin}/admin/billing`,
   });
