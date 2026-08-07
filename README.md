@@ -191,6 +191,11 @@ git pull && docker compose up -d --build
   o QR do bar B credita no cartão do bar B, mesmo que você tenha se cadastrado no A.
 - **Provisionamento:** o super admin cria tenants e nomeia admins em `/platform`
   (funções `create_tenant` e `grant_admin`, protegidas por `is_super_admin`).
+- **Acesso ao `/platform`:** não depende de estar num domínio de um
+  estabelecimento — basta estar logado e ser super admin. Use o domínio-raiz
+  (`https://SEU_ROOT/platform`) ou o subdomínio reservado
+  `PLATFORM_ADMIN_SLUG` (padrão `painel.SEU_ROOT`) como endereço fixo, sem
+  misturar com o de nenhum cliente.
 
 ---
 
