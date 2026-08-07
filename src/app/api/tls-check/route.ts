@@ -18,6 +18,13 @@ export async function GET(request: Request) {
     return new NextResponse("ok");
   }
 
+  // Subdomínio reservado para o painel do super admin (/platform) — endereço
+  // fixo e memorável, independente de qualquer estabelecimento cadastrado.
+  const platformSlug = (process.env.PLATFORM_ADMIN_SLUG || "painel").toLowerCase();
+  if (root && domain === `${platformSlug}.${root}`) {
+    return new NextResponse("ok");
+  }
+
   // Subdomínio do root: <slug>.<root> — precisa existir um tenant com esse slug.
   if (root && domain.endsWith(`.${root}`)) {
     const slug = domain.slice(0, -(root.length + 1)).split(".")[0];
