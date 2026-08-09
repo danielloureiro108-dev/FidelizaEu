@@ -7,7 +7,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Roda em tudo, menos assets estáticos e imagens.
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Roda em tudo, menos assets estáticos, imagens e os arquivos de PWA
+    // (o service worker e o manifest precisam ser servidos sem passar pela
+    // sessão/redirecionamento de rotas protegidas).
+    "/((?!_next/static|_next/image|favicon.ico|sw\\.js|manifest\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

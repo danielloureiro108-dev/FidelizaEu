@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { getActiveTenant } from "@/lib/tenant";
 import { BrandStyle } from "@/components/BrandProvider";
+import { PwaRegister } from "@/components/PwaRegister";
 
 export async function generateMetadata(): Promise<Metadata> {
   const tenant = await getActiveTenant();
@@ -10,6 +11,16 @@ export async function generateMetadata(): Promise<Metadata> {
     description: tenant
       ? "Acumule e ganhe!"
       : "Cartão fidelidade digital com QR anti-fraude e a cara do seu estabelecimento.",
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: tenant?.name ?? "FidelizaEu",
+    },
+    icons: {
+      icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+      apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    },
   };
 }
 
@@ -30,7 +41,10 @@ export default async function RootLayout({
       <head>
         <BrandStyle tenant={tenant} />
       </head>
-      <body className="min-h-dvh bg-neutral-50">{children}</body>
+      <body className="min-h-dvh bg-neutral-50">
+        <PwaRegister />
+        {children}
+      </body>
     </html>
   );
 }
