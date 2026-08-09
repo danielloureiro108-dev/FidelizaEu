@@ -17,10 +17,12 @@ export async function generateMetadata(): Promise<Metadata> {
       statusBarStyle: "default",
       title: tenant?.name ?? "FidelizaEu",
     },
-    icons: {
-      icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
-      apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    },
+    icons: tenant?.logo_url
+      ? { icon: [{ url: tenant.logo_url }], apple: [{ url: tenant.logo_url }] }
+      : {
+          icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+          apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+        },
   };
 }
 
