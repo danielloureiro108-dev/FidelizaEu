@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ui } from "@/lib/ui";
+import { InstallButton } from "@/components/InstallButton";
 
 export function LoginForm({
   tenantId,
@@ -174,6 +175,8 @@ export function LoginForm({
         >
           {mode === "signup" ? "Já tem conta? Entrar" : mode === "forgot" ? "Voltar para o login" : "Não tem conta? Cadastre-se"}
         </button>
+
+        <InstallButton appName={tenantName} />
       </div>
     </main>
   );

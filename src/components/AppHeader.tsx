@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { LogoutButton } from "@/components/LogoutButton";
 
 export function AppHeader({
   name,
@@ -10,15 +9,6 @@ export function AppHeader({
   name: string;
   logoUrl?: string | null;
 }) {
-  const router = useRouter();
-  const supabase = createClient();
-
-  async function signOut() {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
-
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-5 py-4 backdrop-blur-md">
       <div className="flex items-center gap-2.5">
@@ -36,12 +26,7 @@ export function AppHeader({
           </>
         )}
       </div>
-      <button
-        onClick={signOut}
-        className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-700"
-      >
-        Sair
-      </button>
+      <LogoutButton />
     </header>
   );
 }

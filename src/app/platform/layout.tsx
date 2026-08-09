@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { LogoutButton } from "@/components/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -32,9 +33,12 @@ export default async function PlatformLayout({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/fidelizaeu-lockup.png" alt="FidelizaEu" className="h-8 w-auto" />
         </Link>
-        <span className="rounded-full bg-gradient-to-br from-[#232C68] to-[#1A235C] px-3 py-1 text-xs font-semibold text-white shadow-sm">
-          Super admin
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="rounded-full bg-gradient-to-br from-[#232C68] to-[#1A235C] px-3 py-1 text-xs font-semibold text-white shadow-sm">
+            Super admin
+          </span>
+          <LogoutButton />
+        </div>
       </header>
       <main className="animate-fade-in-up px-5 py-6">{children}</main>
     </div>
