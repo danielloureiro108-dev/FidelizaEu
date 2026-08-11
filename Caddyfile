@@ -17,5 +17,15 @@ https:// {
 		on_demand
 	}
 	encode gzip
+
+	# Este app não usa Server Actions do Next.js (nenhum "use server" no
+	# código) — qualquer requisição com esse header é sonda/exploit de bot
+	# tentando as vulnerabilidades de DoS conhecidas do Next.js. Bloqueia
+	# antes de chegar no processo, sem depender do app estar saudável.
+	@next_action_probe {
+		header Next-Action *
+	}
+	respond @next_action_probe 403
+
 	reverse_proxy app:3000
 }
