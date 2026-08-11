@@ -27,6 +27,13 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
+  // /auth/* é sempre o alvo de um redirect vindo de outra origem (o
+  // /verify do Supabase, no fluxo de recuperação de senha/confirmação de
+  // cadastro). Interceptar essa navegação e refazer o fetch por dentro do
+  // service worker é uma combinação conhecida por quebrar silenciosamente
+  // em navegadores baseados em WebKit — deixa passar direto pra rede.
+  if (url.pathname.startsWith("/auth/")) return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
