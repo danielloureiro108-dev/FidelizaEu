@@ -134,7 +134,7 @@ export function LoginForm({
           {mode === "forgot"
             ? "Informe seu e-mail para receber um código de redefinição."
             : mode === "reset-code"
-            ? `Enviamos um código de 6 dígitos para ${email}.`
+            ? `Enviamos um código por e-mail para ${email}.`
             : "Acesse seu cartão fidelidade digital."}
         </p>
 
@@ -158,11 +158,11 @@ export function LoginForm({
               type="text"
               inputMode="numeric"
               required
-              maxLength={6}
-              placeholder="Código de 6 dígitos"
+              maxLength={12}
+              placeholder="Código recebido por e-mail"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className={`${ui.input} text-center font-mono text-lg tracking-[0.5em]`}
+              className={`${ui.input} text-center font-mono text-lg tracking-[0.3em]`}
             />
             <input
               type="password"
