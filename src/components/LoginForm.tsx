@@ -20,10 +20,12 @@ export function LoginForm({
   const params = useSearchParams();
   const next = params.get("next") || "/";
 
-  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "reset-code">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -32,13 +34,41 @@ export function LoginForm({
     setLoading(true);
     setMsg(null);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?next=/reset-senha`,
-      });
+      // Sem redirectTo: o fluxo é 100% pelo código de 6 dígitos do e-mail,
+      // digitado nesta mesma página — sem depender de link/redirect entre
+      // domínios (Supabase → app), que é frágil em navegador de e-mail.
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) throw error;
-      setMsg("Enviamos um link de redefinição para o seu e-mail.");
+      setMode("reset-code");
+      setMsg(null);
     } catch (err: any) {
       setMsg(err.message ?? "Algo deu errado. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleResetCode(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setMsg(null);
+    try {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: code.trim(),
+        type: "recovery",
+      });
+      if (verifyError) throw verifyError;
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (updateError) throw updateError;
+
+      router.push(next);
+      router.refresh();
+    } catch (err: any) {
+      setMsg(err.message ?? "Código inválido ou expirado. Peça um novo.");
     } finally {
       setLoading(false);
     }
@@ -92,11 +122,19 @@ export function LoginForm({
           {tenantName}
         </p>
         <h1 className="mt-1 font-display text-2xl font-bold text-brand-primary">
-          {mode === "login" ? "Entrar" : mode === "signup" ? "Criar conta" : "Esqueci minha senha"}
+          {mode === "login"
+            ? "Entrar"
+            : mode === "signup"
+            ? "Criar conta"
+            : mode === "reset-code"
+            ? "Digite o código"
+            : "Esqueci minha senha"}
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
           {mode === "forgot"
-            ? "Informe seu e-mail para receber um link de redefinição."
+            ? "Informe seu e-mail para receber um código de redefinição."
+            : mode === "reset-code"
+            ? `Enviamos um código de 6 dígitos para ${email}.`
             : "Acesse seu cartão fidelidade digital."}
         </p>
 
@@ -111,7 +149,32 @@ export function LoginForm({
               className={ui.input}
             />
             <button type="submit" disabled={loading} className={`${ui.btnPrimary} w-full`}>
-              {loading ? "Aguarde..." : "Enviar link de redefinição"}
+              {loading ? "Aguarde..." : "Enviar código de redefinição"}
+            </button>
+          </form>
+        ) : mode === "reset-code" ? (
+          <form onSubmit={handleResetCode} className="mt-6 space-y-3">
+            <input
+              type="text"
+              inputMode="numeric"
+              required
+              maxLength={6}
+              placeholder="Código de 6 dígitos"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className={`${ui.input} text-center font-mono text-lg tracking-[0.5em]`}
+            />
+            <input
+              type="password"
+              required
+              minLength={6}
+              placeholder="Nova senha"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={ui.input}
+            />
+            <button type="submit" disabled={loading} className={`${ui.btnPrimary} w-full`}>
+              {loading ? "Aguarde..." : "Redefinir senha"}
             </button>
           </form>
         ) : (
@@ -168,12 +231,28 @@ export function LoginForm({
 
         <button
           onClick={() => {
-            setMode(mode === "signup" ? "login" : mode === "forgot" ? "login" : "signup");
+            setMode(
+              mode === "signup"
+                ? "login"
+                : mode === "forgot"
+                ? "login"
+                : mode === "reset-code"
+                ? "forgot"
+                : "signup"
+            );
+            setCode("");
+            setNewPassword("");
             setMsg(null);
           }}
           className="mt-4 w-full text-center text-sm font-medium text-brand-primary underline-offset-2 hover:underline"
         >
-          {mode === "signup" ? "Já tem conta? Entrar" : mode === "forgot" ? "Voltar para o login" : "Não tem conta? Cadastre-se"}
+          {mode === "signup"
+            ? "Já tem conta? Entrar"
+            : mode === "forgot"
+            ? "Voltar para o login"
+            : mode === "reset-code"
+            ? "Pedir novo código"
+            : "Não tem conta? Cadastre-se"}
         </button>
 
         <InstallButton appName={tenantName} />
