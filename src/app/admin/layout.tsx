@@ -24,15 +24,18 @@ export default async function AdminLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/admin");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [{ data: profile }, tenant] = await Promise.all([
+    supabase.from("profiles").select("role, tenant_id").eq("id", user.id).maybeSingle(),
+    getActiveTenant(),
+  ]);
 
-  if (profile?.role !== "admin") redirect("/cartao");
-
-  const tenant = await getActiveTenant();
+  // Precisa ser admin E vinculado a ESTE estabelecimento (o resolvido pelo
+  // host) — role="admin" sozinho não basta, senão um admin de outro tenant
+  // (ou um ex-admin cujo papel ainda não foi revogado em todo lugar)
+  // acessaria a tela de admin de qualquer slug.
+  if (profile?.role !== "admin" || !tenant || profile.tenant_id !== tenant.id) {
+    redirect("/cartao");
+  }
 
   let billingWarning: string | null = null;
   if (tenant) {
