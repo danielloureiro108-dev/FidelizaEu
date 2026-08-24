@@ -1,0 +1,30 @@
+name: Deploy
+
+# Roda automaticamente a cada push no main (ex.: quando um PR é mergeado) e
+# também pode ser disparado manualmente pela aba Actions ("Run workflow"),
+# útil para reaplicar o deploy sem precisar de um novo commit.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH (git pull + docker compose up --build)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script_stop: true
+          script: |
+            cd "${{ secrets.DEPLOY_PATH }}"
+            git pull origin main
+            docker compose up -d --build
