@@ -48,7 +48,12 @@ export default async function CartaoPage() {
       <AppHeader name={tenant?.name ?? "Fidelidade"} logoUrl={tenant?.logo_url} />
 
       <main className="px-5 py-5 pb-24">
-        <LoyaltyCard stamps={stamps} required={required} rewardText={rewardText} />
+        <LoyaltyCard
+          stamps={stamps}
+          required={required}
+          rewardText={rewardText}
+          logoUrl={tenant?.logo_url}
+        />
 
         {rewards && rewards.length > 0 && (
           <div className="mt-5 animate-fade-in-up rounded-card border-2 border-brand-secondary bg-brand-secondary/10 p-4 shadow-soft">

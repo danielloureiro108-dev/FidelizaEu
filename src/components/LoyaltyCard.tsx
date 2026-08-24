@@ -4,11 +4,13 @@ export function LoyaltyCard({
   required,
   rewardText,
   justStamped,
+  logoUrl,
 }: {
   stamps: number;
   required: number;
   rewardText: string;
   justStamped?: boolean;
+  logoUrl?: string | null;
 }) {
   const slots = Array.from({ length: required });
   return (
@@ -32,9 +34,18 @@ export function LoyaltyCard({
               } ${justStamped && isNewest ? "stamp-pop" : ""}`}
             >
               {filled ? (
-                <span className="font-display text-2xl font-black text-brand-primary">
-                  ✓
-                </span>
+                logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={logoUrl}
+                    alt=""
+                    className="h-full w-full object-contain p-2"
+                  />
+                ) : (
+                  <span className="font-display text-2xl font-black text-brand-primary">
+                    ✓
+                  </span>
+                )
               ) : (
                 <span className="text-xs font-medium text-neutral-300">
                   {i + 1}
