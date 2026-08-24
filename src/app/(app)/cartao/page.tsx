@@ -42,17 +42,22 @@ export default async function CartaoPage() {
   const stamps = card?.stamps ?? 0;
   const required = program?.stamps_required ?? 10;
   const rewardText = program?.reward_description ?? "Uma refeição grátis!";
+  const strategyTitle = program?.name ?? `A cada ${required} refeições`;
 
   return (
     <div className="mx-auto min-h-dvh max-w-md bg-neutral-50">
       <AppHeader name={tenant?.name ?? "Fidelidade"} logoUrl={tenant?.logo_url} />
 
-      <main className="px-5 py-5 pb-24">
+      <main
+        className="px-5 py-5"
+        style={{ paddingBottom: "calc(7rem + env(safe-area-inset-bottom))" }}
+      >
         <LoyaltyCard
           stamps={stamps}
           required={required}
           rewardText={rewardText}
           logoUrl={tenant?.logo_url}
+          title={strategyTitle}
         />
 
         {rewards && rewards.length > 0 && (
@@ -85,7 +90,10 @@ export default async function CartaoPage() {
         )}
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-md bg-gradient-to-t from-neutral-50 via-neutral-50 p-4 pt-8">
+      <div
+        className="fixed inset-x-0 bottom-0 z-10 mx-auto max-w-md bg-gradient-to-t from-neutral-50 via-neutral-50 px-4 pt-8"
+        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+      >
         <Link
           href="/scan"
           className="flex items-center justify-center gap-2 rounded-full bg-brand-gradient py-4 font-semibold text-white shadow-lift transition hover:-translate-y-0.5 active:scale-[0.98]"

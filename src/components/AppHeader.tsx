@@ -10,7 +10,10 @@ export function AppHeader({
   logoUrl?: string | null;
 }) {
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-5 py-4 backdrop-blur-md">
+    <header
+      className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-5 py-4 backdrop-blur-md"
+      style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+    >
       <div className="flex items-center gap-2.5">
         {logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

@@ -90,7 +90,13 @@ export default function ScanPage() {
   }
 
   return (
-    <main className="night-sky min-h-dvh px-5 py-6">
+    <main
+      className="night-sky min-h-dvh px-5"
+      style={{
+        paddingTop: "max(1.5rem, env(safe-area-inset-top))",
+        paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+      }}
+    >
       <div className="mx-auto max-w-md">
         <Link href="/cartao" className="text-sm text-white/80 underline-offset-2 hover:underline">
           ← Voltar ao cartão
