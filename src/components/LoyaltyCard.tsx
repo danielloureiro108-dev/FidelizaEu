@@ -5,19 +5,21 @@ export function LoyaltyCard({
   rewardText,
   justStamped,
   logoUrl,
+  title,
 }: {
   stamps: number;
   required: number;
   rewardText: string;
   justStamped?: boolean;
   logoUrl?: string | null;
+  title?: string;
 }) {
   const slots = Array.from({ length: required });
   return (
     <div className="night-sky animate-fade-in-up rounded-card p-5 shadow-lift ring-1 ring-black/10">
       <div className="mb-4 rounded-lg bg-brand-secondary px-3 py-2 text-center shadow-sm">
         <p className="font-display text-lg font-bold leading-tight text-brand-primary">
-          A cada {required} refeições
+          {title ?? `A cada ${required} refeições`}
         </p>
         <p className="text-sm italic text-brand-primary/80">{rewardText}</p>
       </div>
