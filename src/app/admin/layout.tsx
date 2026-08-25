@@ -49,17 +49,19 @@ export default async function AdminLayout({
 
   return (
     <div className="mx-auto min-h-dvh max-w-3xl bg-neutral-50">
-      <AppHeader name={tenant?.name ?? "Admin"} logoUrl={tenant?.logo_url} />
-      <AdminNav />
-      {billingWarning && (
-        <Link
-          href="/admin/billing"
-          className="block bg-amber-50 px-5 py-2.5 text-center text-sm font-medium text-amber-800 transition hover:bg-amber-100"
-        >
-          {billingWarning} Toque para resolver na página de Assinatura.
-        </Link>
-      )}
-      <main className="animate-fade-in-up px-5 py-6">{children}</main>
+      <div className="print:hidden">
+        <AppHeader name={tenant?.name ?? "Admin"} logoUrl={tenant?.logo_url} />
+        <AdminNav />
+        {billingWarning && (
+          <Link
+            href="/admin/billing"
+            className="block bg-amber-50 px-5 py-2.5 text-center text-sm font-medium text-amber-800 transition hover:bg-amber-100"
+          >
+            {billingWarning} Toque para resolver na página de Assinatura.
+          </Link>
+        )}
+      </div>
+      <main className="animate-fade-in-up px-5 py-6 print:p-0">{children}</main>
     </div>
   );
 }
