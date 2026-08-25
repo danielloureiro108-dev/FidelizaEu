@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Link
           href="/admin/qrcode"
           className="group rounded-card bg-brand-gradient p-5 text-white shadow-glow transition hover:-translate-y-0.5"
@@ -100,6 +100,17 @@ export default async function AdminDashboard() {
           <p className="font-display text-lg font-bold">Exibir QR do dia</p>
           <p className="mt-1 text-sm text-white/80">
             Coloque numa tela no balcão para os clientes carimbarem.
+          </p>
+        </Link>
+        <Link
+          href="/admin/divulgar"
+          className="rounded-card border border-neutral-200/80 bg-white p-5 shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift"
+        >
+          <p className="font-display text-lg font-bold text-brand-primary">
+            Divulgar meu Cartão
+          </p>
+          <p className="mt-1 text-sm text-neutral-500">
+            Imprima um QR para o cliente aderir ao seu cartão fidelidade.
           </p>
         </Link>
         <Link
