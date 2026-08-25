@@ -24,16 +24,16 @@ export default async function AdminLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/admin");
 
-  const [{ data: profile }, tenant] = await Promise.all([
-    supabase.from("profiles").select("role, tenant_id").eq("id", user.id).maybeSingle(),
-    getActiveTenant(),
-  ]);
+  const tenant = await getActiveTenant();
 
-  // Precisa ser admin E vinculado a ESTE estabelecimento (o resolvido pelo
-  // host) — role="admin" sozinho não basta, senão um admin de outro tenant
-  // (ou um ex-admin cujo papel ainda não foi revogado em todo lugar)
-  // acessaria a tela de admin de qualquer slug.
-  if (profile?.role !== "admin" || !tenant || profile.tenant_id !== tenant.id) {
+  // Precisa ser admin DESTE estabelecimento (o resolvido pelo host) — um
+  // mesmo e-mail pode ser admin de vários slugs, então a permissão é
+  // sempre checada por tenant (tenant_admins), nunca de forma global.
+  const { data: isAdmin } = tenant
+    ? await supabase.rpc("is_admin_of", { p_tenant: tenant.id })
+    : { data: false };
+
+  if (!isAdmin || !tenant) {
     redirect("/cartao");
   }
 

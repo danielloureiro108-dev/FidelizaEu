@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getActiveTenant } from "@/lib/tenant";
 import { BillingPanel } from "@/components/BillingPanel";
 
 export const dynamic = "force-dynamic";
@@ -11,18 +12,17 @@ export default async function AdminBillingPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/admin/billing");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, tenant_id")
-    .eq("id", user.id)
-    .maybeSingle();
+  const activeTenant = await getActiveTenant();
+  const { data: isAdmin } = activeTenant
+    ? await supabase.rpc("is_admin_of", { p_tenant: activeTenant.id })
+    : { data: false };
 
-  if (profile?.role !== "admin" || !profile.tenant_id) redirect("/cartao");
+  if (!isAdmin || !activeTenant) redirect("/cartao");
 
   const { data: tenant } = await supabase
     .from("tenants")
     .select("name, subscription_status, trial_ends_at, plan")
-    .eq("id", profile.tenant_id)
+    .eq("id", activeTenant.id)
     .maybeSingle();
 
   return <BillingPanel tenant={tenant} />;

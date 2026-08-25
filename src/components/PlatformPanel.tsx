@@ -214,9 +214,12 @@ export function PlatformPanel({
 
   async function revokeAdmin(admin: AdminRow) {
     if (!editingId) return;
-    if (!window.confirm(`Remover acesso de admin de ${admin.email}?`)) return;
+    if (!window.confirm(`Remover acesso de admin de ${admin.email} neste estabelecimento?`)) return;
     setEditBusy(true);
-    const { error } = await supabase.rpc("revoke_admin", { p_user_id: admin.id });
+    const { error } = await supabase.rpc("revoke_admin", {
+      p_user_id: admin.id,
+      p_tenant: editingId,
+    });
     setEditBusy(false);
     if (error) setEditMsg(`Erro: ${error.message}`);
     else loadAdmins(editingId);
