@@ -77,8 +77,13 @@ $$;
 -- ===========================================================================
 --  revoke_admin — agora tira o admin de UM estabelecimento específico
 --  (antes despromovia de todos, já que só havia um vínculo possível).
+--  Assinatura mudou (ganhou p_tenant): remove a versão antiga primeiro,
+--  senão "create or replace" cria uma sobrecarga e deixa a função velha
+--  (que zerava role em todos os tenants) viva no banco.
 --  Restrito ao super admin.
 -- ===========================================================================
+drop function if exists public.revoke_admin(uuid);
+
 create or replace function public.revoke_admin(p_user_id uuid, p_tenant uuid)
 returns void language plpgsql security definer set search_path = public as $$
 begin
