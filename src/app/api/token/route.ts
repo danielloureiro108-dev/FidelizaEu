@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { getActiveTenant } from "@/lib/tenant";
 import { currentToken } from "@/lib/token";
 
-// Retorna o token atual do QR. Restrito a admin do tenant — assim ninguém
-// consegue gerar o QR de casa e burlar o carimbo presencial.
+// Retorna o token atual do QR. Restrito a admin DESTE tenant (resolvido pelo
+// host) — assim ninguém consegue gerar o QR de casa e burlar o carimbo
+// presencial, e um mesmo e-mail admin de vários slugs só gera o QR do slug
+// que está acessando no momento.
 export async function GET() {
   const supabase = createClient();
   const {
@@ -13,40 +16,39 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const admin = createAdminClient();
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("tenant_id, role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const tenant = await getActiveTenant();
+  const { data: isAdmin } = tenant
+    ? await supabase.rpc("is_admin_of", { p_tenant: tenant.id })
+    : { data: false };
 
-  if (!profile || profile.role !== "admin" || !profile.tenant_id) {
+  if (!tenant || !isAdmin) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  const { data: tenant } = await admin
+  const admin = createAdminClient();
+  const { data: tenantRow } = await admin
     .from("tenants")
     .select("slug, stamp_secret")
-    .eq("id", profile.tenant_id)
+    .eq("id", tenant.id)
     .maybeSingle();
 
   const { data: program } = await admin
     .from("loyalty_programs")
     .select("token_rotation_secs")
-    .eq("tenant_id", profile.tenant_id)
+    .eq("tenant_id", tenant.id)
     .eq("active", true)
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
 
-  if (!tenant?.stamp_secret || !program) {
+  if (!tenantRow?.stamp_secret || !program) {
     return NextResponse.json({ error: "no_program" }, { status: 400 });
   }
 
   const rotation = program.token_rotation_secs;
-  const token = currentToken(tenant.stamp_secret, rotation);
+  const token = currentToken(tenantRow.stamp_secret, rotation);
   // Segundos restantes até a próxima rotação (para o countdown no front).
   const remaining = rotation - (Math.floor(Date.now() / 1000) % rotation);
 
-  return NextResponse.json({ token, slug: tenant.slug, rotationSecs: rotation, remaining });
+  return NextResponse.json({ token, slug: tenantRow.slug, rotationSecs: rotation, remaining });
 }

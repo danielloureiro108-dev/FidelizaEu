@@ -108,10 +108,13 @@ async function provisionTenant(
   });
 
   if (invited?.user) {
+    // Vínculo de admin é N:N (tenant_admins) — não sobrescreve tenant_id do
+    // profile, então o mesmo e-mail continua admin de outros estabelecimentos
+    // que já tivesse.
     await admin
-      .from("profiles")
-      .update({ role: "admin", tenant_id: tenant.id })
-      .eq("id", invited.user.id);
+      .from("tenant_admins")
+      .upsert({ tenant_id: tenant.id, user_id: invited.user.id }, { onConflict: "tenant_id,user_id" });
+    await admin.from("profiles").update({ role: "admin" }).eq("id", invited.user.id);
   }
 }
 
